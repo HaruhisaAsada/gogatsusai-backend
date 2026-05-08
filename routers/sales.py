@@ -1,14 +1,10 @@
-import logging
-
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from db import get_db
 from models import SalesRecord
 from schemas import SalesCreate, SalesOut
-from sheets import append_sale_row
 
 router = APIRouter(prefix="/sales", tags=["sales"])
-logger = logging.getLogger(__name__)
 
 
 @router.post("", response_model=SalesOut)
@@ -17,16 +13,6 @@ def create_sales(payload: SalesCreate, db: Session = Depends(get_db)):
     db.add(row)
     db.commit()
     db.refresh(row)
-
-    try:
-        append_sale_row(
-            item_name=row.item_name,
-            quantity=row.quantity,
-            sold_at=row.sold_at.isoformat(),
-        )
-    except Exception as e:
-        # Keep API response successful even if spreadsheet append fails.
-        logger.exception("Failed to append sales row to Google Sheets: %s", e)
 
     return SalesOut(
         id=row.id,
