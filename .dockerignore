@@ -1,8 +1,9 @@
-.venv/
+.git
 __pycache__/
 *.pyc
+.venv/
 .env
 gogatsusai.db
-*.log
 goga-*.json
 *service-account*.json
+*.log

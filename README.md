@@ -23,10 +23,14 @@ cp .env.example .env
 ```
 
 - `DATABASE_URL` default: `sqlite:///./gogatsusai.db`
+- `GOOGLE_SHEETS_ID`: target spreadsheet ID
+- `GOOGLE_SHEET_NAME`: target sheet name (default: `sales_1`)
 
 ## Docker run
 
 ```bash
 docker build -t gogatsusai-backend .
-docker run --rm -p 8000:8000 -e DATABASE_URL=sqlite:///./gogatsusai.db gogatsusai-backend
+docker run --rm -p 8080:8080 -e PORT=8080 -e DATABASE_URL=sqlite:///./gogatsusai.db gogatsusai-backend
 ```
+
+For local Sheets append, set `GOOGLE_APPLICATION_CREDENTIALS` to the service account JSON path.
