@@ -1,3 +1,6 @@
+from datetime import timezone
+from zoneinfo import ZoneInfo
+
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from db import get_db
@@ -5,6 +8,14 @@ from models import SalesRecord
 from schemas import SalesCreate, SalesOut
 
 router = APIRouter(prefix="/sales", tags=["sales"])
+JST = ZoneInfo("Asia/Tokyo")
+
+
+def to_jst(dt):
+    # Legacy rows may be naive. Treat them as UTC, then convert to JST.
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(JST)
 
 def calculate_discount(item_name: str, quantity: int) -> int:
     if item_name == "レモネード":
@@ -23,7 +34,7 @@ def create_sales(payload: SalesCreate, db: Session = Depends(get_db)):
     return SalesOut(
         id=row.id,
         item_name=row.item_name,
-        sold_at=row.sold_at,
+        sold_at=to_jst(row.sold_at),
         quantity=row.quantity,
         unit_price=row.unit_price,
         discount_amount=row.discount_amount,
@@ -38,7 +49,7 @@ def list_sales(db: Session = Depends(get_db)):
         SalesOut(
             id=r.id,
             item_name=r.item_name,
-            sold_at=r.sold_at,
+            sold_at=to_jst(r.sold_at),
             quantity=r.quantity,
             unit_price=r.unit_price,
             discount_amount=r.discount_amount,
