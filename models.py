@@ -17,6 +17,7 @@ class SalesRecord(Base):
     sold_at = Column(DateTime(timezone=True), nullable=False)
     quantity = Column(Integer, nullable=False)
     unit_price = Column(Integer, nullable=False)
+    discount_amount = Column(Integer, nullable=False, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 

@@ -1,9 +1,15 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import inspect, text
 from db import Base, engine
 from routers import staffs, sales, shifts, expenses, reports
 
 Base.metadata.create_all(bind=engine)
+inspector = inspect(engine)
+sales_columns = {col["name"] for col in inspector.get_columns("sales_records")}
+if "discount_amount" not in sales_columns:
+    with engine.begin() as conn:
+        conn.execute(text("ALTER TABLE sales_records ADD COLUMN discount_amount INTEGER NOT NULL DEFAULT 0"))
 
 app = FastAPI(title="gogatsusai-api")
 

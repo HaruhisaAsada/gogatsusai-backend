@@ -10,7 +10,7 @@ router = APIRouter(prefix="/reports", tags=["reports"])
 
 @router.get("/profit", response_model=ProfitReport)
 def profit_report(db: Session = Depends(get_db)):
-    sales = db.query(func.sum(SalesRecord.quantity * SalesRecord.unit_price)).scalar() or 0
+    sales = db.query(func.sum((SalesRecord.quantity * SalesRecord.unit_price) - SalesRecord.discount_amount)).scalar() or 0
     expenses = db.query(func.sum(ExpenseRecord.amount)).scalar() or 0
     return ProfitReport(
         total_sales=int(sales),

@@ -27,6 +27,7 @@ class SalesOut(BaseModel):
     sold_at: datetime
     quantity: int
     unit_price: int
+    discount_amount: int
     total_amount: int
 
 
